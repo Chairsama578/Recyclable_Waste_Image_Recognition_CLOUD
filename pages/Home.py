@@ -24,20 +24,20 @@ def intro_box(text):
 def show():
 
     st.markdown(
-        "<h3 style='color:#2b6f3e;'>Giới thiệu Đề tài</h3>",
+        "<h3 style='color:#2b6f3e;'>Introduction Topic</h3>",
         unsafe_allow_html=True
     )
 
     # ====== MỤC 1 ======
     intro_box("""
-    <h3 style="color:#b30000;">1. Bối cảnh và Lý do chọn đề tài</h3>
-    Vấn đề xử lý và phân loại rác thải đóng vai trò quan trọng trong việc bảo vệ môi trường,
-    đặc biệt tại các đô thị lớn nơi lượng rác sinh hoạt tăng nhanh.
-    Việc phân loại rác thủ công thường tốn thời gian, thiếu chính xác và chi phí nhân công cao.
+    <h3 style="color:#b30000;">1. Context and Reasons for Choosing the Topic </h3>
+    The issue of waste management and classification plays an important role in environmental protection, 
+    especially in large urban areas where the amount of household waste is rapidly increasing. 
+    Manual waste sorting is often time-consuming, inaccurate, and labor-intensive.
 
-    Sự phát triển của Trí tuệ Nhân tạo, đặc biệt là công nghệ <b>AutoML Vision</b> của Google,
-    cho phép tạo ra các mô hình nhận diện hình ảnh một cách tự động, không cần lập trình phức tạp.
-    Điều này giúp sinh viên có thể triển khai mô hình phân loại rác một cách hiệu quả và thực tế.
+    The development of Artificial Intelligence, particularly Google's <b>AutoML Vision</b> technology, allows 
+    for the automatic creation of image recognition models without complex programming. 
+    This enables students to effectively and practically implement waste classification models.
     """)
 
     # ====== MỤC 2 ======
@@ -51,16 +51,16 @@ def show():
     </ul>
 
     <ul style="margin-left:30px;">
-        <li>Plastic (Nhựa)</li>
-        <li>Paper (Giấy)</li>
-        <li>Glass (Thủy tinh)</li>
-        <li>Metal (Kim loại)</li>
-        <li>Organic (Hữu cơ)</li>
-        <li>Others (Khác)</li>
+        <li>Plastic (Plastic)</li>
+        <li>Paper (Paper)</li>
+        <li>Glass (Glass)</li>
+        <li>Metal (Metal)</li>
+        <li>Organic (Organic)</li>
+        <li>Others (Other)</li>
     </ul>
 
-    Hệ thống sau khi huấn luyện sẽ được tích hợp vào ứng dụng web Streamlit để demo khả năng phân loại rác.
-    Đây là bước quan trọng hướng đến <b>giải pháp phân loại rác tự động (Automated Waste Sorting System)</b>.
+    After training, the system will be integrated into the Streamlit web application to demonstrate its waste classification capabilities.
+    This is an important step towards <b>an automatic waste sorting solution (Automated Waste Sorting System)</b>.
     """)
 
     # ====== MỤC 3 ======
@@ -68,12 +68,12 @@ def show():
     <h3 style="color:#b30000;">3. Phạm vi và Nội dung thực hiện</h3>
 
     <ul>
-        <li>Thu thập và chuẩn hóa dữ liệu hình ảnh rác.</li>
-        <li>Chuẩn bị cấu trúc dataset theo đúng chuẩn AutoML Vision.</li>
-        <li>Huấn luyện mô hình phân loại rác bằng AutoML Vision.</li>
-        <li>Đánh giá mô hình qua các chỉ số: Accuracy, Precision, Recall, F1-score.</li>
-        <li>Triển khai mô hình dự đoán trong giao diện Streamlit.</li>
-        <li>Đề xuất quy trình phân loại rác tự động dựa trên mô hình đã xây dựng.</li>
+        <li>Collect and standardize waste image data.</li>
+        <li>Prepare the dataset structure according to the AutoML Vision standard.</li>
+        <li>Training a waste classification model using AutoML Vision.</li>
+        <li>Evaluating the model through various metrics: Accuracy, Precision, Recall, F1-score.</li>
+        <li>Deploy the predictive model within the Streamlit interface.</li>
+        <li>Propose an automated waste classification process based on the developed model.</li>
     </ul>
     """)
 
@@ -82,12 +82,12 @@ def show():
     <h3 style="color:#b30000;">4. Ý nghĩa khoa học và thực tiễn</h3>
 
     <ul>
-        <li>Ứng dụng AI vào công tác phân loại rác – lĩnh vực có ý nghĩa xã hội lớn.</li>
-        <li>Giảm gánh nặng cho công nhân môi trường.</li>
-        <li>Tăng tỷ lệ tái chế nhờ nhận diện chính xác.</li>
-        <li>Có thể phát triển thành hệ thống phân loại rác tự động trong các đô thị thông minh.</li>
+        <li>Applying AI to waste sorting – a field with significant social impact.</li>
+        <li>Reducing the burden on sanitation workers.</li>
+        <li>Increasing recycling rates through precise identification.</li>
+        <li>Has the potential to develop into an automatic waste sorting system in smart cities.</li>
     </ul>
 
-    Đề tài mang tính ứng dụng cao và phù hợp xu hướng chuyển đổi số trong lĩnh vực môi trường.
+    The topic is highly applicable and aligns with the digital transformation trends in the environmental sector.
     """)
 
