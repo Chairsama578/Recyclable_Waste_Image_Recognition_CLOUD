@@ -41,14 +41,14 @@ def yellow_box(text: str):
 @st.cache_resource
 def load_infer_and_labels():
     if not os.path.exists(MODEL_DIR):
-        st.error("❌ Không tìm thấy SavedModel trong thư mục models/waste_model.")
+        st.error("❌ SavedModel not found in models/waste_model directory.")
         st.stop()
 
     model = tf.saved_model.load(MODEL_DIR)
     infer_fn = model.signatures["serving_default"]
 
     if not os.path.exists(LABEL_FILE):
-        st.error("❌ Không tìm thấy models/labels.pkl.")
+        st.error("❌ models/labels.pkl not found.")
         st.stop()
 
     labels = joblib.load(LABEL_FILE)
@@ -59,7 +59,7 @@ infer, LABELS = load_infer_and_labels()
 
 
 def predict_path(img_path: str):
-    """Dự đoán 1 ảnh theo đường dẫn (dùng cho phần đánh giá)."""
+    """Predict an image by its path (used for evaluation)."""
 
     img = Image.open(img_path).convert("RGB")
     img = img.resize((224, 224))
@@ -82,24 +82,24 @@ def predict_path(img_path: str):
 # ==============================
 def show():
     st.markdown(
-        "<h2 style='color:#2b6f3e;'>Training Info – Thông tin huấn luyện AutoKeras</h2>",
+        "<h2 style='color:#2b6f3e;'>Training Info – AutoKeras Training Overview</h2>",
         unsafe_allow_html=True,
     )
 
     # -------------------------------------------------------
-    # 1. Hiện dữ liệu thô
+    # 1. Display raw data
     # -------------------------------------------------------
     yellow_box(
         """
-        <h3 style="color:#b30000;">1. Hiện dữ liệu thô</h3>
-        Dataset gốc được lưu trong thư mục <b>images_raw/</b>, gồm các lớp:
+        <h3 style="color:#b30000;">1. Display Raw Dataset</h3>
+        The original dataset is stored in the <b>images_raw/</b> directory and includes the following classes:
         <code>glass, metal, organic, others, paper, plastic</code>.
-        Hệ thống sẽ thống kê số lượng ảnh ban đầu của từng lớp.
+        The system counts the number of original images for each class.
         """
     )
 
     if not os.path.exists(DATA_DIR):
-        st.error("⚠ Không tìm thấy thư mục images_raw/.")
+        st.error("⚠ images_raw/ directory not found.")
         return
 
     raw_stats = {}
@@ -117,20 +117,20 @@ def show():
         ]
         raw_stats[cls] = len(files)
 
-    st.write("**📊 Số lượng ảnh gốc (chưa augment):**")
-    st.table({"Lớp": list(raw_stats.keys()), "Số ảnh gốc": list(raw_stats.values())})
+    st.write("**📊 Number of original images (before augmentation):**")
+    st.table({"Class": list(raw_stats.keys()), "Original Images": list(raw_stats.values())})
 
     st.write("---")
 
     # -------------------------------------------------------
-    # 2. Hiện xử lý dữ liệu thô đã được xử lý (Tiền xử lý dữ liệu)
+    # 2. Data preprocessing & augmentation
     # -------------------------------------------------------
     yellow_box(
         """
-        <h3 style="color:#b30000;">2. Tiền xử lý dữ liệu & Augmentation</h3>
-        Các ảnh được <b>resize về 224×224</b> và lưu thêm các phiên bản augment
-        (xoay, lật, thay đổi độ sáng, thêm nhiễu, ...). Các ảnh augment được đặt
-        tên bắt đầu bằng <code>aug_*.jpg</code>.
+        <h3 style="color:#b30000;">2. Data Preprocessing & Augmentation</h3>
+        All images are <b>resized to 224×224</b>. Additional augmented images are generated
+        (rotation, flipping, brightness adjustment, noise, etc.).
+        Augmented images are saved with filenames starting with <code>aug_*.jpg</code>.
         """
     )
 
@@ -148,37 +148,37 @@ def show():
         aug_stats[cls] = len(aug_imgs)
         total_stats[cls] = len(all_imgs)
 
-    st.write("**📊 Số lượng ảnh sau khi augment:**")
+    st.write("**📊 Dataset size after augmentation:**")
     st.table(
         {
-            "Lớp": classes,
-            "Ảnh gốc": [raw_stats.get(c, 0) for c in classes],
-            "Ảnh augment (aug_*)": [aug_stats.get(c, 0) for c in classes],
-            "Tổng ảnh": [total_stats.get(c, 0) for c in classes],
+            "Class": classes,
+            "Original Images": [raw_stats.get(c, 0) for c in classes],
+            "Augmented Images (aug_*)": [aug_stats.get(c, 0) for c in classes],
+            "Total Images": [total_stats.get(c, 0) for c in classes],
         }
     )
 
     st.write("---")
 
     # -------------------------------------------------------
-    # 3. Hiện đường dẫn tương đối lưu model
+    # 3. Model storage path
     # -------------------------------------------------------
     yellow_box(
         """
-        <h3 style="color:#b30000;">3. Đường dẫn lưu mô hình đã huấn luyện</h3>
-        Mô hình tốt nhất do AutoKeras chọn được export theo định dạng
-        <b>SavedModel</b> và lưu tại:
+        <h3 style="color:#b30000;">3. Trained Model Storage Path</h3>
+        The best model selected by AutoKeras is exported in
+        <b>SavedModel</b> format and stored at:
         """
     )
 
     st.code(
-        f"""
+        """
 models/
-    waste_model/      # SavedModel (export từ AutoKeras)
+    waste_model/      # SavedModel exported from AutoKeras
         saved_model.pb
         variables/
         assets/
-    labels.pkl        # Danh sách nhãn theo thứ tự index softmax
+    labels.pkl        # Class labels in softmax index order
 """,
         language="text",
     )
@@ -186,14 +186,13 @@ models/
     st.write("---")
 
     # -------------------------------------------------------
-    # 4. Đọc thông tin model object
+    # 4. Model signature info
     # -------------------------------------------------------
     yellow_box(
         """
-        <h3 style="color:#b30000;">4. Thông tin về mô hình SavedModel</h3>
-        Dưới đây là thông tin input/output của signature
-        <code>serving_default</code> trong SavedModel, dùng cho việc suy luận
-        (inference) trong ứng dụng.
+        <h3 style="color:#b30000;">4. SavedModel Information</h3>
+        Below is the input/output information of the
+        <code>serving_default</code> signature used for inference.
         """
     )
 
@@ -204,23 +203,23 @@ models/
     st.code(str(infer.structured_outputs), language="text")
 
     # -------------------------------------------------------
-    # 5–7. Kết quả train & đánh giá độ tin cậy (đánh giá nhanh trên dataset)
+    # 5–7. Training results & quick evaluation
     # -------------------------------------------------------
     yellow_box(
         """
-        <h3 style="color:#b30000;">5–7. Kết quả train & Đánh giá độ tin cậy mô hình</h3>
-        Để minh họa, hệ thống sẽ chạy <b>đánh giá nhanh</b> trên toàn bộ
-        dataset hiện có (gồm cả ảnh gốc và ảnh augment) và tính:
+        <h3 style="color:#b30000;">5–7. Training Results & Model Reliability Evaluation</h3>
+        For demonstration purposes, the system performs a <b>quick evaluation</b>
+        on the entire dataset (including original and augmented images) to compute:
         <ul>
-            <li>Độ chính xác (accuracy) theo từng lớp và toàn bộ.</li>
-            <li>Độ tin cậy trung bình (mean confidence) của các dự đoán đúng.</li>
+            <li>Accuracy per class and overall accuracy.</li>
+            <li>Mean confidence of correct predictions.</li>
         </ul>
-        Lưu ý: đây chỉ là đánh giá tham khảo, không thay thế cho đánh giá trên
-        tập kiểm tra độc lập.
+        Note: This is only a reference evaluation and does not replace
+        testing on an independent test set.
         """
     )
 
-    if st.button("▶ Chạy đánh giá nhanh trên dataset"):
+    if st.button("▶ Run quick evaluation on dataset"):
         per_class_total = {c: 0 for c in classes}
         per_class_correct = {c: 0 for c in classes}
         per_class_conf_sum = {c: 0.0 for c in classes}
@@ -250,7 +249,6 @@ models/
 
             progress.progress(i / n)
 
-        # Tính bảng kết quả
         rows = []
         total_correct = 0
         total_images = 0
@@ -263,128 +261,41 @@ models/
 
             rows.append(
                 {
-                    "Lớp": cls,
-                    "Số ảnh": total,
-                    "Dự đoán đúng": correct,
+                    "Class": cls,
+                    "Images": total,
+                    "Correct Predictions": correct,
                     "Accuracy (%)": round(acc, 2),
-                    "Mean confidence (đúng)": round(mean_conf, 4),
+                    "Mean Confidence (Correct)": round(mean_conf, 4),
                 }
             )
 
             total_correct += correct
             total_images += total
 
-        st.write("**📊 Kết quả theo từng lớp:**")
+        st.write("**📊 Per-class evaluation results:**")
         st.dataframe(rows, hide_index=True)
 
         if total_images > 0:
             overall_acc = total_correct / total_images * 100
             st.success(
-                f"🎯 Độ chính xác tổng thể trên toàn bộ dataset: **{overall_acc:.2f}%**"
+                f"🎯 Overall accuracy on the entire dataset: **{overall_acc:.2f}%**"
             )
 
     st.write("---")
 
     # -------------------------------------------------------
-    # 8. Gợi ý so sánh với các mô hình khác
+    # 8. Model comparison suggestion
     # -------------------------------------------------------
     yellow_box(
         """
-        <h3 style="color:#b30000;">8. So sánh kết quả với các mô hình khác</h3>
-        Trong đề tài này, AutoKeras đã tự động thử nhiều kiến trúc CNN khác nhau
-        (ResNet, Xception, v.v.) và chọn ra mô hình có độ chính xác cao nhất.
+        <h3 style="color:#b30000;">8. Comparison with Other Models</h3>
+        In this project, AutoKeras automatically explores multiple CNN architectures
+        (ResNet, Xception, etc.) and selects the best-performing model.
         <br><br>
-        Để mở rộng, sinh viên có thể:
+        For further study, students can:
         <ul>
-            <li><b>8.1 Huấn luyện thêm một mô hình thủ công</b> (ví dụ: CNN thuần Keras).</li>
-            <li><b>8.2 So sánh accuracy, thời gian train, kích thước mô hình</b> giữa AutoKeras và CNN thủ công.</li>
+            <li><b>8.1 Train a manual CNN model</b> (pure Keras).</li>
+            <li><b>8.2 Compare accuracy, training time, and model size</b> between AutoKeras and the manual CNN.</li>
         </ul>
         """
-    )
-
-    # 8.1 – Ví dụ code CNN thuần Keras
-    st.markdown("### 8.1 Huấn luyện thêm một mô hình CNN thuần Keras (minh hoạ)")
-
-    with st.expander("📌 Xem ví dụ code CNN thuần Keras"):
-        st.code(
-            """
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
-import numpy as np
-
-IMG_SIZE = (224, 224)
-NUM_CLASSES = 6  # glass, metal, organic, others, paper, plastic
-
-# 1. Load ảnh thành numpy array (X) và nhãn (y) giống phần train_autokeras.py
-#    Giả sử đã có X.shape = (N, 224, 224, 3), y là nhãn dạng số 0..5
-
-# 2. Chuẩn hoá
-X = X.astype("float32") / 255.0
-
-# 3. Xây dựng CNN đơn giản
-model = keras.Sequential([
-    layers.Input(shape=(*IMG_SIZE, 3)),
-    layers.Conv2D(32, 3, activation="relu"),
-    layers.MaxPooling2D(),
-    layers.Conv2D(64, 3, activation="relu"),
-    layers.MaxPooling2D(),
-    layers.Conv2D(128, 3, activation="relu"),
-    layers.GlobalAveragePooling2D(),
-    layers.Dense(128, activation="relu"),
-    layers.Dense(NUM_CLASSES, activation="softmax")
-])
-
-model.compile(
-    optimizer="adam",
-    loss="sparse_categorical_crossentropy",
-    metrics=["accuracy"],
-)
-
-# 4. Train mô hình
-history = model.fit(
-    X_train, y_train,
-    validation_data=(X_val, y_val),
-    epochs=20,
-    batch_size=32
-)
-
-# 5. Lưu model để so sánh kích thước với AutoKeras
-model.save("models/manual_cnn.keras")  # hoặc .h5
-            """,
-            language="python",
-        )
-
-    st.markdown(
-        """
-        👉 Sinh viên có thể copy đoạn code trên ra file riêng
-        (ví dụ <code>train_cnn_manual.py</code>), chỉnh sửa lại phần đọc dữ liệu
-        giống với <code>train_autokeras.py</code> và chạy để thu được:
-        <ul>
-            <li>Accuracy trên tập validation/test.</li>
-            <li>Thời gian huấn luyện (tổng thời gian chạy script).</li>
-            <li>Kích thước file mô hình <code>manual_cnn.keras</code>.</li>
-        </ul>
-        """
-    )
-
-    # 8.2 – Bảng khung so sánh
-    st.markdown("### 8.2 Khung so sánh AutoKeras vs CNN thuần Keras")
-
-    st.write(
-        """
-        Sau khi huấn luyện xong cả hai mô hình, sinh viên ghi lại các số liệu
-        (accuracy, thời gian train, kích thước file) và điền vào bảng dưới đây
-        trong báo cáo. Ở ứng dụng demo, bảng chỉ mang tính minh họa.
-        """
-    )
-
-    # Bảng khung (sinh viên tự cập nhật số liệu thật trong báo cáo)
-    st.table(
-        {
-            "Mô hình": ["AutoKeras ImageClassifier", "CNN thuần Keras"],
-            "Accuracy trên tập đánh giá (%)": ["...", "..."],
-            "Thời gian train (phút)": ["...", "..."],
-            "Kích thước file model (MB)": ["...", "..."],
-        }
     )
