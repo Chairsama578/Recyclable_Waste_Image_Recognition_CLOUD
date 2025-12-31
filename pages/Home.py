@@ -44,10 +44,10 @@ def show():
     intro_box("""
     <h3 style="color:#b30000;">2. Mục tiêu Đề tài</h3>
 
-    Mục tiêu chính của đề tài:
+    The main objective of the topic:
     <ul>
-        <li>Xây dựng hệ thống nhận diện hình ảnh rác tái chế sử dụng Google AutoML Vision.</li>
-        <li>Phân loại tự động các loại rác phổ biến:</li>
+        <li>Develop an image recognition system for recyclable waste using Google AutoML Vision.</li>
+        <li>Automatically classify common types of waste:</li>
     </ul>
 
     <ul style="margin-left:30px;">
@@ -65,7 +65,7 @@ def show():
 
     # ====== MỤC 3 ======
     intro_box("""
-    <h3 style="color:#b30000;">3. Phạm vi và Nội dung thực hiện</h3>
+    <h3 style="color:#b30000;">3. Scope and Content of Implementation</h3>
 
     <ul>
         <li>Collect and standardize waste image data.</li>
@@ -79,7 +79,7 @@ def show():
 
     # ====== MỤC 4 ======
     intro_box("""
-    <h3 style="color:#b30000;">4. Ý nghĩa khoa học và thực tiễn</h3>
+    <h3 style="color:#b30000;">4.Scientific and practical significance</h3>
 
     <ul>
         <li>Applying AI to waste sorting – a field with significant social impact.</li>
