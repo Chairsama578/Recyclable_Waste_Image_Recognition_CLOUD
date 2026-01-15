@@ -1,0 +1,32 @@
+git init
+git add .
+
+git commit -m "Add AutoKeras SavedModel for inference"
+
+git remote add origin https://github.com/BuiTienDuc/Recyclable_Waste_Image_Recognition_CLOUD.git
+
+git branch -M main
+git push -u origin main
+
+
+
+
+
+git add requirements.txt
+git commit -m "Fix requirements for Streamlit Cloud (tensorflow-cpu only)"
+git push
+
+
+git add runtime.txt requirements.txt
+git commit -m "Fix Streamlit Cloud Python version for TensorFlow"
+git push
+
+git add git_commands.txt
+git commit -m "Add git commands notes"
+git push origin main
+
+
+git status
+git add runtime.txt requirements.txt
+git commit -m "Force Python 3.10 for TensorFlow compatibility"
+git push origin main
