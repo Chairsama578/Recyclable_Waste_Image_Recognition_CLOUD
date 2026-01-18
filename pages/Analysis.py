@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 import joblib
 from tensorflow.keras.models import load_model
-from tensorflow.keras.applications import mobilenet_v2 as mobilenetv2  # THÊM DÒNG NÀY
+from tensorflow.keras.applications import mobilenet_v2 as mobilenetv2
 
 # ==============================
 # 🔧 CONFIG
@@ -106,22 +106,13 @@ def result_box(label: str, conf: float):
     )
 
 # ==============================
-# 🔶 PREDICTION FUNCTION (FIXED)
+# 🔶 PREDICTION FUNCTION
 # ==============================
 def predict_image(pil_img: Image.Image):
-    """
-    Nhận ảnh PIL, resize và gọi model .keras.
-    Input: float32, preprocessed theo MobileNetV2 [-1,1], shape (1, 224, 224, 3)
-    """
-    # 1. Resize về 224x224
     img = pil_img.resize((224, 224))
-    # 2. Chuyển sang numpy float32 (vẫn [0,255])
     arr = np.array(img).astype(np.float32)
-    # 3. Thêm chiều batch → (1, 224, 224, 3)
     arr = np.expand_dims(arr, axis=0)
-    # 4. Áp dụng preprocess MobileNetV2 → [-1,1]
     arr = mobilenetv2.preprocess_input(arr)
-    # 5. Dự đoán bằng model
     probs = infer.predict(arr)[0]
     idx = np.argmax(probs)
     conf = probs[idx]
@@ -141,7 +132,7 @@ def show():
     # PART 1: DATASET STATISTICS
     st.markdown("### 1. Thống kê Dataset")
     data_dir = "images_raw"
-    classes = sorted(os.listdir(data_dir))
+    classes = sorted([d for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))])  # FIX: Chỉ lấy directories
     stats = {cls: len(os.listdir(os.path.join(data_dir, cls))) for cls in classes}
     st.table(stats)
 
