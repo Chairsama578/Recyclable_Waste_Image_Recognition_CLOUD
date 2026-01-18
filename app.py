@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 import joblib
 from tensorflow.keras.models import load_model
-
+from tensorflow.keras.applications import mobilenet_v2 as mobilenetv2
 # ================================
 # 🔧 CẤU HÌNH TRANG (Must be first!)
 # ================================
@@ -114,17 +114,17 @@ def load_infer_and_labels():
 infer, LABELS = load_infer_and_labels()
 
 # ================================
-# 🔶 HÀM DỰ ĐOÁN (COPY TỪ ANALYSIS)
+# 🔶 HÀM DỰ ĐOÁN (FIX PREPROCESS)
 # ================================
 def predict_image(pil_img: Image.Image):
     img = pil_img.resize((224, 224))
-    arr = np.array(img) / 255.0
-    arr = np.expand_dims(arr, axis=0)
+    arr = np.array(img)  # (224,224,3) uint8 [0,255]
+    arr = np.expand_dims(arr, axis=0).astype(np.float32)
+    arr = mobilenetv2.preprocess_input(arr)  # Scale về [-1,1] cho MobileNetV2
     probs = infer.predict(arr)[0]
     idx = np.argmax(probs)
     conf = probs[idx]
     return LABELS[idx], conf
-
 # ================================
 # 🔶 HÀM RESULT_BOX (COPY VÀ ĐIỀU CHỈNH TỪ ANALYSIS)
 # ================================
