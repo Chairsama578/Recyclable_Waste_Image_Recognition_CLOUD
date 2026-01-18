@@ -14,7 +14,7 @@ from tensorflow.keras.models import load_model  # Import để load .keras
 DATA_DIR = "images_raw"
 MODEL_DIR = "models/waste_mobilenetv2.keras"
 LABEL_FILE = "models/labels.pkl"
-
+AUG_DIR = "images_augmented"
 
 # ==============================
 #  STYLE BOX
