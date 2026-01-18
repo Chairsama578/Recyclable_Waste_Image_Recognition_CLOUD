@@ -71,7 +71,7 @@ page = st.sidebar.radio(
 # ================================
 MODEL_DIR = "models/waste_mobilenetv2.keras"
 LABEL_FILE = "models/labels.pkl"
-# Dictionary hướng dẫn và tip (dịch VN để khớp Home) - Đã sửa để khớp 7 classes
+# Dictionary hướng dẫn và tip (dịch VN để khớp Home) - Đã sửa để khớp 'others'
 RECYCLE_INSTRUCTIONS_VN = {
     "plastic": "Rửa sạch và bỏ vào thùng tái chế màu <strong>vàng</strong> dành cho nhựa. Ở Việt Nam, thùng nhựa thường có màu vàng hoặc xanh dương.",
     "paper": "Rửa sạch, gấp phẳng và bỏ vào thùng tái chế màu <strong>xanh dương</strong> dành cho giấy & carton. Ở Việt Nam, thùng giấy thường có màu xanh dương hoặc xanh lá.",
@@ -79,7 +79,7 @@ RECYCLE_INSTRUCTIONS_VN = {
     "glass": "Rửa sạch và bỏ vào thùng tái chế màu <strong>xanh dương</strong> dành cho thủy tinh. Tránh vỡ để dễ tái chế.",
     "metal": "Rửa sạch và bỏ vào thùng tái chế màu <strong>xám</strong> dành cho kim loại. Ở Việt Nam, thùng kim loại thường có màu xám hoặc xanh.",
     "organic": "Bỏ vào thùng hữu cơ màu <strong>nâu</strong> hoặc ủ phân tại nhà. Tránh trộn với rác không phân hủy.",
-    "other": "Bỏ vào thùng rác thông thường màu <strong>đen</strong>. Cố gắng giảm thiểu loại rác này."  # Sửa từ "others" thành "other" để khớp class
+    "others": "Bỏ vào thùng rác thông thường màu <strong>đen</strong>. Cố gắng giảm thiểu loại rác này."  # Sửa thành "others" để khớp display
 }
 ENV_TIPS_VN = {
     "plastic": "Tái chế 1 tấn nhựa giúp tiết kiệm năng lượng tương đương 700 lít dầu và giảm khí thải CO2.",
@@ -88,7 +88,7 @@ ENV_TIPS_VN = {
     "glass": "Tái chế thủy tinh tiết kiệm 30% năng lượng so với sản xuất mới và có thể tái chế vô hạn.",
     "metal": "Tái chế kim loại giảm 95% năng lượng khai thác và giảm ô nhiễm không khí.",
     "organic": "Ủ phân hữu cơ giảm khí metan từ bãi rác và tạo phân bón tự nhiên cho cây trồng.",
-    "other": "Giảm rác không tái chế giúp bảo vệ đại dương và động vật hoang dã khỏi ô nhiễm nhựa."  # Sửa từ "others" thành "other"
+    "others": "Giảm rác không tái chế giúp bảo vệ đại dương và động vật hoang dã khỏi ô nhiễm nhựa."  # Sửa thành "others"
 }
 # ================================
 # 🔶 HÀM LOAD MODEL + LABELS (COPY TỪ ANALYSIS)
@@ -106,7 +106,7 @@ def load_infer_and_labels():
     return model, labels
 infer, LABELS = load_infer_and_labels()
 # ================================
-# 🔶 HÀM DỰ ĐOÁN (FIX PREPROCESS)
+# 🔶 HÀM DỰ ĐOÁN (FIX PREPROCESS) - Thêm return probs để debug
 # ================================
 def predict_image(pil_img: Image.Image):
     img = pil_img.resize((224, 224))
@@ -116,9 +116,9 @@ def predict_image(pil_img: Image.Image):
     probs = infer.predict(arr)[0]
     idx = np.argmax(probs)
     conf = probs[idx]
-    return LABELS[idx], conf
+    return LABELS[idx], conf, probs
 # ================================
-# 🔶 HÀM RESULT_BOX (COPY VÀ ĐIỀU CHỈNH TỪ ANALYSIS) - Đã sửa để handle cardboard/paper
+# 🔶 HÀM RESULT_BOX (COPY VÀ ĐIỀU CHỈNH TỪ ANALYSIS) - Đã sửa để handle cardboard/paper và others
 # ================================
 def result_box(label: str, conf: float):
     lower_label = label.lower()
@@ -126,7 +126,7 @@ def result_box(label: str, conf: float):
     instruction = RECYCLE_INSTRUCTIONS_VN.get(lower_label, "Không có hướng dẫn cụ thể.")
     tip = ENV_TIPS_VN.get(lower_label, "Không có mẹo cụ thể.")
    
-    # Map label sang tiếng Việt (để khớp placeholder cũ) - Thêm cardboard
+    # Map label sang tiếng Việt (để khớp placeholder cũ) - Thêm cardboard và others
     vn_label_map = {
         "plastic": "Nhựa (Plastic)",
         "paper": "Giấy (Paper/Cardboard)",
@@ -134,7 +134,7 @@ def result_box(label: str, conf: float):
         "glass": "Thủy tinh (Glass)",
         "metal": "Kim loại (Metal)",
         "organic": "Hữu cơ (Organic)",
-        "other": "Khác (Other)"  # Sửa từ "others" thành "other"
+        "others": "Khác (Others)"  # Sửa thành "others"
     }
     vn_label = vn_label_map.get(lower_label, label)
    
@@ -166,7 +166,7 @@ def result_box(label: str, conf: float):
 # ================================
 if page.startswith("Home"):
     st.markdown("""
-    The Waste Classification app is an intelligent web-based system designed to automatically identify and classify common recyclable waste materials into five primary categories: **paper**, **plastic**, **metal**, **glass**, and **organic**.
+    The Waste Classification app is an intelligent web-based system designed to automatically identify and classify common recyclable waste materials into seven primary categories: **cardboard**, **glass**, **metal**, **organic**, **others**, **paper**, **plastic**.
    
     Built using open-source tools like TensorFlow, Keras, and Streamlit, it provides instant analysis and practical recycling instructions tailored to local practices in Vietnam. 🌍♻️
     """)
@@ -178,7 +178,7 @@ if page.startswith("Home"):
     """)
     st.markdown("### Brief Instructions")
     st.markdown("""
-    - **Supported categories:** Paper, Plastic, Metal, Glass, Organic.
+    - **Supported categories:** Cardboard, Glass, Metal, Organic, Others, Paper, Plastic.
     - Upload your photo below to get started!
     - If the confidence score is below 70%, try retaking the photo from a different angle.
     """)
@@ -201,11 +201,15 @@ if page.startswith("Home"):
         with col_right:
             # Dự đoán thật sử dụng model
             pil_img = Image.open(uploaded_file).convert("RGB")
-            predicted_class, confidence = predict_image(pil_img)
-            confidence = confidence # Đã là float 0-1, nhân 100 ở display
+            predicted_class, confidence, probs = predict_image(pil_img)
            
             # Hiển thị với result_box
             result_box(predicted_class, confidence)
+           
+            # Debug: Hiển thị probabilities cho từng class
+            st.markdown("### Debug: Probabilities cho từng class (để kiểm tra lý do predict)")
+            for cls, prob in zip(LABELS, probs):
+                st.write(f"{cls}: {prob:.4f}")
        
         # Ảnh minh họa thùng rác (giữ nguyên)
         st.markdown("<div style='margin:30px 0; text-align:center;'>", unsafe_allow_html=True)
