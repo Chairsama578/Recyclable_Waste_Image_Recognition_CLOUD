@@ -6,6 +6,7 @@ import numpy as np
 import tensorflow as tf
 import joblib
 from tensorflow.keras.models import load_model  # Import để load .keras
+from tensorflow.keras.applications import mobilenet_v2
 
 
 # ==============================
@@ -62,9 +63,9 @@ infer, LABELS = load_infer_and_labels()
 
 def predict_image(pil_img: Image.Image):
     img = pil_img.resize((224, 224))
-    arr = np.array(img)  # [0,255]
+    arr = np.array(img)
     arr = np.expand_dims(arr, axis=0).astype(np.float32)
-    arr = mobilenetv2.preprocess_input(arr)  # [-1,1]
+    arr = mobilenet_v2.preprocess_input(arr)
     probs = infer.predict(arr)[0]
     idx = np.argmax(probs)
     conf = probs[idx]
@@ -75,10 +76,6 @@ def predict_path(path: str):
     return predict_image(img)
 
 
-# Thêm hàm predict_path (vì được gọi trong evaluation nhưng chưa định nghĩa)
-def predict_path(path: str):
-    img = Image.open(path).convert("RGB")
-    return predict_image(img)
 
 
 # ==============================
